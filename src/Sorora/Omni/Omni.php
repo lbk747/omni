@@ -60,7 +60,7 @@ class Omni {
 
     public function outputData()
     {
-        $this->time['Total Execution Time:'] = $this->time['__end'] - $this->time['__start'];
+        $this->time['total'] = $this->time['__end'] - $this->time['__start'];
         unset($this->time['__start']);
         unset($this->time['__end']);
         ksort($this->view_data);
