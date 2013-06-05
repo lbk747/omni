@@ -76,19 +76,31 @@
     .omni-btn:hover {
         background: #555;
     }
-    .omni-dwn {
+    .omni-arrow {
         border-style: solid;
-        border-width: .7em .5em 0 .5em;
-        border-color: #FFF transparent transparent transparent;
-        display: block;
+        display: inline-block;
         margin-top: .3em;
-        margin-left: 1.8em;
         text-align: center;
         height: 0;
         width: 0;
     }
+    .omni-dwn {
+        border-color: #FFF transparent transparent transparent;
+        border-width: .7em .5em 0 .5em;
+    }
+    .omni-left {
+        border-color: transparent #FFF transparent transparent;
+        border-width: .5em .7em .5em 0;
+    }
+    .omni-right {
+        border-color: transparent transparent transparent #FFF;
+        border-width: .5em 0 .5em .7em;
+    }
     .omni-hide {
         display: none;
+    }
+    #omni-profiler.omni-full {
+        width: 100%;
     }
 </style>
 <div id="omni-profiler">
@@ -138,6 +150,10 @@
             <span>Logs</span>
             (0)
         </button>
+        <button class="omni-btn" data-jsfunc="resize">
+            <span class="omni-arrow omni-left"></span>
+            <span class="omni-arrow omni-right"></span>
+        </button>
     </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
@@ -169,13 +185,17 @@
             if($omni_sub.css('display') == 'block')
             {
                 $omni_sub.css('display', 'none');
-                $omni_toolbar.children('.omni-minimize').html('<span class="omni-dwn"></span>');
+                $omni_toolbar.children('.omni-minimize').html('<span class="omni-arrow omni-dwn"></span>');
             }
             else
             {
                 $omni_sub.css('display', 'block');
                 $omni_toolbar.children('.omni-minimize').html('_');
             }
+        },
+        resize : function ()
+        {
+            $omni_profiler.toggleClass('omni-full');
         }
     };
     $(document).ready(function ()
