@@ -34,24 +34,7 @@ class OmniServiceProvider extends ServiceProvider {
 		$this->registerAlias();
 		$this->loadConfig();
 		$this->registerViews();
-		$this->profiler = (!$this->app->runningInConsole()) ? $this->app['config']->get('omni::profiler') : false;
-		if($this->profiler)
-		{
-			$this->activateTimers();
-			$this->app['events']->listen('composing:*', function ($data)
-			{
-				\Omni::setViewData($data->getData());
-			});
-			$this->app['events']->listen('illuminate.log', function ($type, $message)
-			{
-				\Omni::addLog($type, $message);
-				if(is_object($message) and stripos(get_class($message), 'exception') !== false)
-				{
-    				\Omni::setTimer('__end');
-					\Omni::outputData();
-				}
-			});
-		}
+		$this->activateProfiler();
 	}
 
 	/**
@@ -63,7 +46,9 @@ class OmniServiceProvider extends ServiceProvider {
 	{
 		$this->app['omni'] = $this->app->share(function($app)
 		{
-			return new \Sorora\Omni\Omni;
+			return new \Sorora\Omni\Omni(
+				new \Sorora\Omni\Loggers\Time
+			);
 		});
 	}
 
@@ -102,19 +87,75 @@ class OmniServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Activates the timers on events
+	 * Activates the profiler
 	 *
 	 * @return void
 	 */
-	protected function activateTimers()
+	protected function activateProfiler()
 	{
-   		$this->app->booting(function () {
-    		\Omni::setTimer('__start');
-		});
+		// Check console isn't running and profiler is enabled
+		$this->profiler = (!$this->app->runningInConsole()) ? $this->app['config']->get('omni::profiler') : false;
+
+		if($this->profiler)
+		{
+			// Listen to shutdown
+			$this->shutdownListener();
+			$this->listenViewComposing();
+			$this->listenLogs();
+		}
+	}
+
+	/**
+	 * Output data on shutdown
+	 *
+	 * @return void
+	 */
+	protected function shutdownListener()
+	{
 		$this->app->shutdown(function () {
-    		\Omni::setTimer('__end');
     		\Omni::outputData();
 		});
+	}
+
+	/**
+	 * Listen to view composing events
+	 *
+	 * @return void
+	 */
+	protected function listenViewComposing()
+	{
+		$this->app['events']->listen('composing:*', function ($data)
+		{
+			\Omni::setViewData($data->getData());
+		});
+	}
+
+	/**
+	 * Listen to logging events
+	 *
+	 * @return void
+	 */
+	protected function listenLogs()
+	{
+		$this->app['events']->listen('illuminate.log', function ($type, $message)
+		{
+			\Omni::addLog($type, $message);
+			$this->toExit($message);
+		});
+	}
+
+	/**
+	 * Determine whether to output now if exception
+	 *
+	 * @return void
+	 */
+	protected function toExit($message)
+	{
+		// Determine whether to output data now if it is exception
+		if(is_object($message) and stripos(get_class($message), 'exception') !== false)
+		{
+			\Omni::outputData();
+		}
 	}
 
 	/**

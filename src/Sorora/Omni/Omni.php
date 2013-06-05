@@ -1,10 +1,19 @@
 <?php namespace Sorora\Omni;
 
+use Sorora\Omni\Loggers\Time;
+
 class Omni {
 
     protected $view_data = array();
-    protected $time = array();
+
     protected $logs = array();
+
+    public $time;
+
+    public function __construct(Time $time)
+    {
+        $this->time = $time;
+    }
 
     /**
      * Returns view data
@@ -59,14 +68,20 @@ class Omni {
         }
     }
 
+    /**
+     * Outputs gathered data to make Profiler
+     *
+     * @return html?
+     */
     public function outputData()
     {
-        $this->totalTime();
-
+        // Sort the view data alphabetically
         ksort($this->view_data);
 
+        $this->time->totalTime();
+
         $data = array(
-            'times' => $this->time, 
+            'times' => $this->time->getTimes(), 
             'view_data' => $this->view_data, 
             'sql_log' => array_reverse(\DB::getQueryLog()),
             'app_logs' => $this->logs
@@ -75,20 +90,12 @@ class Omni {
         echo \View::make('omni::profiler.core', $data);
     }
 
-    protected function totalTime()
-    {
-        $this->time['total'] = $this->time['__end'] - $this->time['__start'];
-
-        unset($this->time['__start']);
-        unset($this->time['__end']);
-    }
-
-    public function setTimer($key)
-    {
-        $mtime = explode(' ', microtime());
-        $this->time[$key] = $mtime[1] + $mtime[0];
-    }
-
+    /**
+     * Cleans an entire array (escapes HTML)
+     *
+     * @param array $data
+     * @return array
+     */
     public function cleanArray($data)
     {
         array_walk_recursive($data, function (&$data)
@@ -98,11 +105,22 @@ class Omni {
         return $data;
     }
 
-    public function memoryUsage()
+    /**
+     * Gets the memory usage
+     *
+     * @return string
+     */
+    public function getMemoryUsage()
     {
         return $this->formatBytes(memory_get_usage());
     }
 
+    /**
+     * Breaks bytes into larger chunks (e.g. B => MB)
+     *
+     * @param strng $bytes
+     * @return string
+     */
     protected function formatBytes($bytes)
     {
         $measures = array('B', 'KB', 'MB', 'DB');
@@ -114,8 +132,34 @@ class Omni {
         return number_format($bytes,($i ? 2 : 0),'.', ',').$measures[$i];
     }
 
+    /**
+     * Store log for later
+     *
+     * @param string $type
+     * @param string|object $message
+     */
     public function addLog($type, $message)
     {
         $this->logs[] = array($type, $message);
+    }
+
+    /**
+     * Start timer
+     *
+     * @param string $key
+     */
+    public function start($key)
+    {
+        $this->time->start($key);
+    }
+
+    /**
+     * End timer
+     *
+     * @param string $key
+     */
+    public function end($key)
+    {
+        $this->time->end($key);
     }
 }

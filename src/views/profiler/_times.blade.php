@@ -1,7 +1,14 @@
 @if(!empty($times))
-<ul>
+<table>
+    <tr>
+        <th>Timer</th>
+        <th>Elapsed Time (Seconds)</th>
+    </tr>
     @foreach($times as $key => $time)
-    <li>{{ $key }} : {{ number_format($time, 5) }} seconds</li>
+    <tr>
+        <td>{{ ucwords($key) }}</td>
+        <td>{{ number_format((is_array($time)) ? $time['total'] : $time, 5) }}</td>
+    </tr>
     @endforeach
-</ul>
+</table>
 @endif

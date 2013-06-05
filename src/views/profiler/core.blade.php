@@ -144,7 +144,7 @@
     <div class="omni-sub">
         <button class="omni-btn" data-jsfunc="flexi" data-jsparams="view">
             <span>Mem</span>
-            {{ Omni::memoryUsage() }}
+            {{ Omni::getMemoryUsage() }}
         </button>
         <button class="omni-btn" data-jsfunc="flexi" data-jsparams="times">
             {{ round($times['total'], 3) }}
