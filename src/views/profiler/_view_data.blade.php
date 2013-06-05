@@ -1,6 +1,6 @@
 <table>
     <tr>
-        <th style="min-width: 10%;">Variable Name</th>
+        <th>Variable Name</th>
         <th>Value</th>
     </tr>
     @foreach($view_data as $key => $value)
