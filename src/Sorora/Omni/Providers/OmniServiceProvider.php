@@ -34,7 +34,7 @@ class OmniServiceProvider extends ServiceProvider {
 		$this->registerAlias();
 		$this->loadConfig();
 		$this->registerViews();
-		$this->profiler = $this->app['config']->get('omni::profiler');
+		$this->profiler = (!$this->app->runningInConsole()) ? $this->app['config']->get('omni::profiler') : false;
 		if($this->profiler)
 		{
 			$this->activateTimers();
