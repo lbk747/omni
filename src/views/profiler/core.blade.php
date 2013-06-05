@@ -10,9 +10,6 @@
         padding: 0;
         list-style: none;
     }
-    #omni-profiler li {
-        display: none;
-    }
     #omni-profiler h1 {
         background: #333;
         color: #DDD;
@@ -90,28 +87,31 @@
         height: 0;
         width: 0;
     }
+    .omni-hide {
+        display: none;
+    }
 </style>
 <div id="omni-profiler">
     <ul>
-        <li class="omni-view">
+        <li class="omni-view omni-hide">
             <h1>View Parameters</h1>
             <div class="omni-content">
                 @include('omni::profiler._view_data')
             </div>
         </li>
-        <li class="omni-times">
+        <li class="omni-times omni-hide">
             <h1>Time</h1>
             <div class="omni-content">
                 @include('omni::profiler._times')
             </div>
         </li>
-        <li class="omni-sql">
+        <li class="omni-sql omni-hide">
             <h1>SQL</h1>
             <div class="omni-content">
                 @include('omni::profiler._sql')
             </div>
         </li>
-        <li class="omni-logs">
+        <li class="omni-logs omni-hide">
             <h1>Logs</h1>
             <div class="omni-content">
                 No logs at this time
@@ -149,17 +149,18 @@
     var omni = {
         flexi : function(type)
         {
-            $omni_profiler.show();
             $ul = $omni_profiler.children('ul');
-            $ul.children('li').css('display', 'none');
             var $box = $ul.children('.omni-'+type);
-            if($box.css('display') == 'none')
+            if($box.hasClass('omni-hide'))
             {
-                $box.css('display', 'block');
+                $omni_profiler.show();
+                $ul.children('li').not('.omni-'+type).addClass('omni-hide');
+                $box.removeClass('omni-hide');
             }
             else
             {
-                $box.css('display', 'none');
+                $omni_profiler.hide();
+                $box.addClass('omni-hide');
             }
         },
         minimize : function()
