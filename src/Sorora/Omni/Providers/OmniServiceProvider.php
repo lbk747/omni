@@ -42,6 +42,15 @@ class OmniServiceProvider extends ServiceProvider {
 			{
 				\Omni::setViewData($data->getData());
 			});
+			$this->app['events']->listen('illuminate.log', function ($type, $message)
+			{
+				\Omni::addLog($type, $message);
+				if(is_object($message) and stripos(get_class($message), 'exception') !== false)
+				{
+    				\Omni::setTimer('__end');
+					\Omni::outputData();
+				}
+			});
 		}
 	}
 

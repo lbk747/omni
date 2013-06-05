@@ -4,6 +4,7 @@ class Omni {
 
     protected $view_data = array();
     protected $time = array();
+    protected $logs = array();
 
     /**
      * Returns view data
@@ -60,13 +61,26 @@ class Omni {
 
     public function outputData()
     {
+        $this->totalTime();
+
+        ksort($this->view_data);
+
+        $data = array(
+            'times' => $this->time, 
+            'view_data' => $this->view_data, 
+            'sql_log' => array_reverse(\DB::getQueryLog()),
+            'app_logs' => $this->logs
+        );
+
+        echo \View::make('omni::profiler.core', $data);
+    }
+
+    protected function totalTime()
+    {
         $this->time['total'] = $this->time['__end'] - $this->time['__start'];
+
         unset($this->time['__start']);
         unset($this->time['__end']);
-        ksort($this->view_data);
-        $sql_log = array_reverse(\DB::getQueryLog());
-
-        echo \View::make('omni::profiler.core', array('times' => $this->time, 'view_data' => $this->view_data, 'sql_log' => $sql_log));
     }
 
     public function setTimer($key)
@@ -98,5 +112,10 @@ class Omni {
             $bytes = $bytes/1024;
         }
         return number_format($bytes,($i ? 2 : 0),'.', ',').$measures[$i];
+    }
+
+    public function addLog($type, $message)
+    {
+        $this->logs[] = array($type, $message);
     }
 }

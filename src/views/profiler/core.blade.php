@@ -102,6 +102,14 @@
     #omni-profiler.omni-full {
         width: 100%;
     }
+    .omni-debug td { background: #FFF; }
+    .omni-info td { background: rgba(200, 240, 255, .2); }
+    .omni-notice td { background: rgba(200, 240, 255, .5); }
+    .omni-warning td { background: rgba(255, 231, 173, .5); }
+    .omni-error td { background: rgba(255, 0, 0, .25); }
+    .omni-critical td { background: rgba(255, 255, 0, .8); }
+    .omni-alert td { background: rgba(255, 255, 0, .5); }
+    .omni-emergency td { background: rgba(255, 0, 0, .8); }
 </style>
 <div id="omni-profiler">
     <ul>
@@ -126,7 +134,7 @@
         <li class="omni-logs omni-hide">
             <h1>Logs</h1>
             <div class="omni-content">
-                No logs at this time
+                @include('omni::profiler._logs')
             </div>
         </li>
     </ul>
@@ -148,7 +156,7 @@
         </button>
         <button class="omni-btn" data-jsfunc="flexi" data-jsparams="logs">
             <span>Logs</span>
-            (0)
+            ({{ count($app_logs) }})
         </button>
         <button class="omni-btn" data-jsfunc="resize">
             <span class="omni-arrow omni-left"></span>
