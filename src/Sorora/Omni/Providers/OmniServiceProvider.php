@@ -20,10 +20,10 @@ class OmniServiceProvider extends ServiceProvider {
 	{
 		$this->package('sorora/omni');
 		$this->app->booting(function () {
-    		\Omni::setTimer('start');
+    		\Omni::setTimer('__start');
 		});
 		$this->app->shutdown(function () {
-    		\Omni::setTimer('end');
+    		\Omni::setTimer('__end');
     		\Omni::outputData();
 		});
 	}
@@ -38,6 +38,7 @@ class OmniServiceProvider extends ServiceProvider {
 		$this->shareWithApp();
 		$this->registerAlias();
 		$this->loadConfig();
+		$this->registerViews();
 		$this->app['events']->listen('composing:*', function ($data)
 		{
 			\Omni::setViewData($data->getData());

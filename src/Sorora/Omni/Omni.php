@@ -23,7 +23,7 @@ class Omni {
      */
     public function setViewData($data)
     {
-        foreach($data AS $key => $value)
+        foreach($data as $key => $value)
         {
             if(! is_object($value))
             {
@@ -45,7 +45,14 @@ class Omni {
      */
     protected function addKeyToData($key, $value)
     {
-        if(!isset($this->view_data[$key]))
+        if(is_array($value))
+        {
+            if(!isset($this->view_data[$key]) or (is_array($this->view_data[$key]) and !in_array($value, $this->view_data[$key])))
+            {
+                $this->view_data[$key][] = $value;
+            }
+        }
+        else
         {
             $this->view_data[$key] = $value;
         }
@@ -53,12 +60,43 @@ class Omni {
 
     public function outputData()
     {
-        echo \View::make('omni::profiler.core', array('times' => $this->time, 'view_data' => $this->view_data));
+        $this->time['Total Execution Time:'] = $this->time['__end'] - $this->time['__start'];
+        unset($this->time['__start']);
+        unset($this->time['__end']);
+        ksort($this->view_data);
+        $sql_log = array_reverse(\DB::getQueryLog());
+
+        echo \View::make('omni::profiler.core', array('times' => $this->time, 'view_data' => $this->view_data, 'sql_log' => $sql_log));
     }
 
     public function setTimer($key)
     {
         $mtime = explode(' ', microtime());
         $this->time[$key] = $mtime[1] + $mtime[0];
+    }
+
+    public function cleanArray($data)
+    {
+        array_walk_recursive($data, function (&$data)
+        {
+            $data = htmlspecialchars($data);
+        });
+        return $data;
+    }
+
+    public function memoryUsage()
+    {
+        return $this->formatBytes(memory_get_usage());
+    }
+
+    protected function formatBytes($bytes)
+    {
+        $measures = array('B', 'KB', 'MB', 'DB');
+        $bytes = memory_get_usage();
+        for($i = 0; $bytes >= 1024; $i++)
+        {
+            $bytes = $bytes/1024;
+        }
+        return number_format($bytes,($i ? 2 : 0),'.', ',').$measures[$i];
     }
 }
