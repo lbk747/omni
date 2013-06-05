@@ -37,7 +37,6 @@ class OmniServiceProvider extends ServiceProvider {
 		$this->profiler = $this->app['config']->get('omni::profiler');
 		if($this->profiler)
 		{
-			echo 'hello2';
 			$this->activateTimers();
 			$this->app['events']->listen('composing:*', function ($data)
 			{
