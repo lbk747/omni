@@ -11,6 +11,8 @@ class OmniServiceProvider extends ServiceProvider {
 	 */
 	protected $defer = false;
 
+	protected $profiler = true;
+
 	/**
 	 * Bootstrap the application events.
 	 *
@@ -19,13 +21,6 @@ class OmniServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('sorora/omni');
-		$this->app->booting(function () {
-    		\Omni::setTimer('__start');
-		});
-		$this->app->shutdown(function () {
-    		\Omni::setTimer('__end');
-    		\Omni::outputData();
-		});
 	}
 
 	/**
@@ -39,10 +34,16 @@ class OmniServiceProvider extends ServiceProvider {
 		$this->registerAlias();
 		$this->loadConfig();
 		$this->registerViews();
-		$this->app['events']->listen('composing:*', function ($data)
+		$this->profiler = $this->app['config']->get('omni::profiler');
+		if($this->profiler)
 		{
-			\Omni::setViewData($data->getData());
-		});
+			echo 'hello2';
+			$this->activateTimers();
+			$this->app['events']->listen('composing:*', function ($data)
+			{
+				\Omni::setViewData($data->getData());
+			});
+		}
 	}
 
 	/**
@@ -90,6 +91,22 @@ class OmniServiceProvider extends ServiceProvider {
 	protected function registerViews()
 	{
    		$this->app['view']->addNamespace('omni', __DIR__.'/../../../views');
+	}
+
+	/**
+	 * Activates the timers on events
+	 *
+	 * @return void
+	 */
+	protected function activateTimers()
+	{
+   		$this->app->booting(function () {
+    		\Omni::setTimer('__start');
+		});
+		$this->app->shutdown(function () {
+    		\Omni::setTimer('__end');
+    		\Omni::outputData();
+		});
 	}
 
 	/**
