@@ -141,7 +141,6 @@
     </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-<script src="/packages/sorora/omni/js/jquery-ui-1.10.3.custom.min.js"></script>
 <script>
     var $omni_profiler   = $(document.getElementById('omni-profiler')),
         $omni_toolbar    = $(document.getElementById('omni-toolbar')),
@@ -189,6 +188,5 @@
                 omni[func](params);
             }
         });
-        $omni_profiler.resizable();
     });
 </script>
