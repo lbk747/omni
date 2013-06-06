@@ -75,19 +75,22 @@ class Omni {
      */
     public function outputData()
     {
-        // Sort the view data alphabetically
-        ksort($this->view_data);
+        if(\Config::get('omni::profiler'))
+        {
+            // Sort the view data alphabetically
+            ksort($this->view_data);
 
-        $this->time->totalTime();
+            $this->time->totalTime();
 
-        $data = array(
-            'times' => $this->time->getTimes(), 
-            'view_data' => $this->view_data, 
-            'sql_log' => array_reverse(\DB::getQueryLog()),
-            'app_logs' => $this->logs
-        );
+            $data = array(
+                'times' => $this->time->getTimes(), 
+                'view_data' => $this->view_data, 
+                'sql_log' => array_reverse(\DB::getQueryLog()),
+                'app_logs' => $this->logs
+            );
 
-        echo \View::make('omni::profiler.core', $data);
+            echo \View::make('omni::profiler.core', $data);
+        }
     }
 
     /**
