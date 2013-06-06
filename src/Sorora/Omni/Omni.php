@@ -89,7 +89,7 @@ class Omni {
                 'app_logs' => $this->logs
             );
 
-            echo \View::make('omni::profiler.core', $data);
+            return \View::make('omni::profiler.core', $data);
         }
     }
 

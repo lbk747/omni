@@ -98,22 +98,35 @@ class OmniServiceProvider extends ServiceProvider {
 
 		if($this->profiler)
 		{
-			// Listen to shutdown
-			$this->shutdownListener();
+			$this->afterListener();
 			$this->listenViewComposing();
 			$this->listenLogs();
 		}
 	}
 
 	/**
-	 * Output data on shutdown
+	 * Output data on route after
 	 *
 	 * @return void
 	 */
-	protected function shutdownListener()
+	protected function afterListener()
 	{
-		$this->app->shutdown(function () {
-    		\Omni::outputData();
+		$this->app['router']->after(function ($request, $response) {
+
+			$content = $response->getContent();
+			$output = \Omni::outputData();
+
+			$body_position = strripos($content, '</body>');
+			if($body_position !== false)
+			{
+				$content = substr($content, 0, $body_position) . $output . substr($content, $body_position);
+			}
+			else
+			{
+				$content .= $output;
+			}
+
+			$response->setContent($content);
 		});
 	}
 
@@ -140,22 +153,7 @@ class OmniServiceProvider extends ServiceProvider {
 		$this->app['events']->listen('illuminate.log', function ($type, $message)
 		{
 			\Omni::addLog($type, $message);
-			$this->toExit($message);
 		});
-	}
-
-	/**
-	 * Determine whether to output now if exception
-	 *
-	 * @return void
-	 */
-	protected function toExit($message)
-	{
-		// Determine whether to output data now if it is exception
-		if(is_object($message) and stripos(get_class($message), 'exception') !== false)
-		{
-			\Omni::outputData();
-		}
 	}
 
 	/**
