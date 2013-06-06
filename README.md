@@ -35,6 +35,12 @@ Set this option to *false* to disable the profiler. It is `true` by default.
     // Config.php
     'profiler' => true
 
+If you wish to disable the profiler during your application, just do:
+
+    Config::set('omni::profiler', false);
+
+>**Note::** This will only disable the output, it will still do it's background listening but will not output it to the browser.
+
 ## jQuery
 
 Set this option to `false` to not pull in jQuery from within the Omni profiler. This is useful if you already have jQuery present on your page requests. Set to `true` by default.
