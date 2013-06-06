@@ -14,11 +14,11 @@ Omni allows you to see:
 - All variables passed to views
 
 # Installation
-To add Omni to your Laravel application, add the following to your *composer.json* file:
+To add Omni to your Laravel application, add the following to your `composer.json` file:
 
     "sorora/omni" : "dev-master"
 
-Then run *composer update* or *composer install* if you have not already installed packages. One final step is needed, add the below to the *providers* array in *app/config/app.php* configuration file:
+Then run `composer update` or `composer install` if you have not already installed packages. One final step is needed, add the below to the `providers` array in `app/config/app.php` configuration file:
 
     'Sorora\Omni\Providers\OmniServiceProvider',
 
@@ -30,7 +30,17 @@ You will want to run the following command to publish the config to your applica
 
 ## Profiler
 
-Set this value to *false* to disable the profiler. It is *true* by default.
+Set this option to *false* to disable the profiler. It is `true` by default.
+
+    // Config.php
+    'profiler' => true
+
+## jQuery
+
+Set this option to `false` to not pull in jQuery from within the Omni profiler. This is useful if you already have jQuery present on your page requests. Set to `true` by default.
+
+    // Config.php
+    'jquery' => true
 
 # Usage
 
