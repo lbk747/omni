@@ -2,7 +2,7 @@
     "name": "sorora/omni",
     "description": "A profiler for Laravel 4.",
     "keywords": ["laravel","profiler","sorora","omni"],
-    "homepage": "http://github.com/sorora/empower",
+    "homepage": "http://github.com/sorora/omni",
     "license": "MIT",
     "authors": [
         {
