@@ -94,7 +94,7 @@ class OmniServiceProvider extends ServiceProvider {
 	protected function activateProfiler()
 	{
 		// Check console isn't running and profiler is enabled
-		$this->profiler = (!$this->app->runningInConsole()) ? $this->app['config']->get('omni::profiler') : false;
+		$this->profiler = (!$this->app->runningInConsole() && !$this->app['request']->ajax()) ? $this->app['config']->get('omni::profiler') : false;
 
 		if($this->profiler)
 		{
