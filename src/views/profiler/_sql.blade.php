@@ -12,6 +12,9 @@
         <td>{{ $log['query'] }}</td>
         <td>
         @foreach($log['bindings'] as $k => $binding)
+            @if(is_object($binding) || is_array($binding))
+                <?php $binding = print_r($binding, true); ?>
+            @endif
             @if($k != count($log['bindings'])-1)
             {{ $binding }},
             @else
