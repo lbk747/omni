@@ -103,7 +103,10 @@ class Omni {
     {
         array_walk_recursive($data, function (&$data)
         {
-            $data = htmlspecialchars($data);
+            if(!is_object($data))
+            {
+                $data = htmlspecialchars($data);
+            }
         });
         return $data;
     }
